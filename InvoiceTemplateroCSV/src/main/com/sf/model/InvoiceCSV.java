@@ -1,6 +1,6 @@
 package com.sf.model;
 
-public class InvoiceCSVCreator {
+public class InvoiceCSV {
 	String Account_Name;
 
 }
