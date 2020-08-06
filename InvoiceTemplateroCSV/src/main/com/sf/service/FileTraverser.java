@@ -2,7 +2,7 @@ package com.sf.service;
 
 import java.io.File;
 
-//Traverse Each file in a folder
+//Traverse Each file in a folder 
 public class FileTraverser {
 	static void traverseFiles(File[] arr) {
 		for (int i = 0; i < arr.length; i++) {
