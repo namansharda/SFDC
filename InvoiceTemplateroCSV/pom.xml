@@ -1,13 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>SFDC</groupId>
-  <artifactId>InvoiceTemplateroCSV</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>Archetype - InvoiceTemplateroCSV</name>
-  <url>http://maven.apache.org</url>
-  
-  <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>SFDC</groupId>
+	<artifactId>InvoiceTemplateroCSV</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Archetype - InvoiceTemplateroCSV</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<poi.version>4.1.2</poi.version>
+	</properties>
+
+	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -17,9 +22,19 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>4.1.2</version>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.9</version>
 		</dependency>
 	</dependencies>
-	
-	
+
+
 </project>
