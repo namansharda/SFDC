@@ -35,12 +35,12 @@ public class USTemplateReader implements ExcelTemplateReader {
 		// creating a Sheet object to retrieve the object
 		XSSFSheet sheet = wb.getSheetAt(0);
 
-		CellReference cellReference = new CellReference("C14");
+		CellReference cellReference = new CellReference("M38");
 
 		Row row = sheet.getRow(cellReference.getRow());
 		Cell cell = row.getCell(cellReference.getCol());
 
-		String V1 = SfUtils.getCellValueasString(sheet, cellReference);
+		Double V1 = SfUtils.getCellValueasNumber(sheet, cellReference);
 
 		System.out.println("*************************");
 

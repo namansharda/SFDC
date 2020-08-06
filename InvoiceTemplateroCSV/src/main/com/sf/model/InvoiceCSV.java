@@ -3,6 +3,7 @@ package com.sf.model;
 public class InvoiceCSV {
 	
 	String Id;
+	Double Amount;
 	String Account_Name;
 	String Currency;
 	String InvoiceStatus;
@@ -16,6 +17,12 @@ public class InvoiceCSV {
 	}
 	public void setId(String id) {
 		Id = id;
+	}
+	public Double getAmount() {
+		return Amount;
+	}
+	public void setAmount(Double amount) {
+		Amount = amount;
 	}
 	public String getAccount_Name() {
 		return Account_Name;

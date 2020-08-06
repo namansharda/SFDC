@@ -21,6 +21,15 @@ public class SfUtils {
 		return cellValue;
 	}
 	
+	public static Double getCellValueasNumber(XSSFSheet sheet, CellReference cellReference) {
+		
+		Row row = sheet.getRow(cellReference.getRow());
+		Cell cell = row.getCell(cellReference.getCol());
+		Double cellValue = cell.getNumericCellValue();
+		
+		return cellValue;
+	}
+	
 
 	public static Properties accountTemplateMappingPropertyLoader () throws IOException {
 		
