@@ -9,7 +9,7 @@ public class InvoiceCSV {
 	String Project;
 	String Contact;
 	String Invoice_External_Id__c;
-	
+	String BillingType;
 	
 	public String getId() {
 		return Id;
@@ -52,6 +52,12 @@ public class InvoiceCSV {
 	}
 	public void setInvoice_External_Id__c(String invoice_External_Id__c) {
 		Invoice_External_Id__c = invoice_External_Id__c;
+	}
+	public String getBillingType() {
+		return BillingType;
+	}
+	public void setBillingType(String billingType) {
+		BillingType = billingType;
 	}
 
 }
