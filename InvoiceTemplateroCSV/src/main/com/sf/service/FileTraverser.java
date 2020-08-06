@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.analysis.function.Constant;
+
 import com.sf.model.InvoiceCSV;
+import com.sf.utils.Constants;
 
 //Traverse Each file in a folder 
 public class FileTraverser {
@@ -15,7 +18,7 @@ public class FileTraverser {
 	TemplateReaderFactory templateFactory = new TemplateReaderFactory();
 	
 	public static void main(String[] args) {
-		String path = "D:\\InvoiceTemplatesWithData";
+		String path = "E:\\SalseForce\\Community Portal\\Invoice Template\\sample template";
 		File maindir = new File(path);
 		FileTraverser fileTraverser = new FileTraverser();
 		if (maindir.exists() && maindir.isDirectory()) {
@@ -31,10 +34,15 @@ public class FileTraverser {
 			//call the template parser method for parsing logic
 			File thisExcel = arr[i];
 			
+			String template = getTemplateForReder(thisExcel);
+			
 			try {
 				
-				ExcelTemplateReader reader = templateFactory.getTemplateFactory("Template-US");
-				reader.parseExcel(thisExcel, invoiceList);
+				ExcelTemplateReader reader = templateFactory.getTemplateFactory(template);
+				if(reader != null)
+					reader.parseExcel(thisExcel, invoiceList);
+				else
+					System.out.println("Not an account specific file name "+ thisExcel.getName());
 			
 				//new TemplateParser().readExcel(thisExcel, invoiceList);
 				
@@ -45,6 +53,13 @@ public class FileTraverser {
 				
 			}
 		}
+	}
+
+	private String getTemplateForReder(File thisExcel) {
+		String Name = thisExcel.getName();
+		System.out.println("name = "+Name);
+		// Specfic file name format not decided for implementing logic
+		return Constants.TEMPLATE_DUBAI;
 	}
 
 
