@@ -7,9 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,7 +34,10 @@ public class DubaiTemplateReader implements ExcelTemplateReader {
 		invoice.setCurrency(Constants.Currency_AED);
 		invoice.setBillingType(Constants.BillingType_Monthly);
 		invoice.setInvoiceStatus(Constants.InvoiceStatus_Draft);
-		invoice.setAccount_Name(accountName);
+		
+		String accountId = SfUtils.getAccountId(accountName);
+		
+		invoice.setAccount_Name(accountId);
 		invoice.setAmount(amount);
 
 		invoiceList.add(invoice);

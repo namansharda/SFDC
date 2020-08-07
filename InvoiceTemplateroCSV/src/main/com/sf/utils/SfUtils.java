@@ -1,6 +1,7 @@
 package com.sf.utils;
 
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -30,7 +31,7 @@ public class SfUtils {
 
 	public static Properties accountTemplateMappingPropertyLoader () throws IOException {
 		
-		FileReader accountTemplate =new FileReader("accountTemplateMapping.properties");
+		FileReader accountTemplate =new FileReader("resource/accountTemplateMapping.properties");
 		Properties p= new Properties();
 		p.load(accountTemplate);
 		
@@ -39,7 +40,7 @@ public class SfUtils {
 	
 	public static Properties accountMappingsPropertyLoader () throws IOException {
 		
-		FileReader accountMappings =new FileReader("accountMappings.properties");
+		FileReader accountMappings =new FileReader("resource/accountMappings.properties");
 		Properties p= new Properties();
 		p.load(accountMappings);
 		
@@ -48,20 +49,37 @@ public class SfUtils {
 	
 	public static Properties projectMappingPropertyLoader () throws IOException {
 		
-		FileReader projectMappings =new FileReader("projectMappings.properties");
+		FileReader projectMappings =new FileReader("resource/projectMappings.properties");
 		Properties p= new Properties();
 		p.load(projectMappings);
 		
 		return p;
 	}
 	
-	public static Properties valueStorePropertyLoader () throws IOException {
-		
-		FileReader valueStore =new FileReader("valueStore.properties");
+	public static String valueStorePropertyLoader (String propertyName, Boolean write, String updatedValue) throws IOException {
+		String value ="";
+		FileReader valueStore =new FileReader("resource/valueStore.properties");
 		Properties p= new Properties();
 		p.load(valueStore);
 		
-		return p;
+		if(!write) {
+			value = p.getProperty(propertyName);
+		}else {
+			p.setProperty(propertyName, updatedValue);
+		}
+		return value;
 	}
+	
+	public static String getAccountId(String accountName) {
+		String accountId = "";
+		try {
+			Properties property = SfUtils.accountMappingsPropertyLoader();
+			 accountId= property.getProperty(accountName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return accountId;
+	}
+	
 	
 }

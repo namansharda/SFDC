@@ -2,6 +2,7 @@ package com.sf.utils;
 
 public class Constants {
 	
+	
 	public static String TEMPLATE_US = "Template-US";
 	public static String TEMPLATE_DUBAI = "Template-Dubai";
 	
@@ -16,11 +17,7 @@ public class Constants {
 
 	
 	public static String InvoiceStatus_Draft = "Draft";
-	
-	
-	
-	
-	
+	public static String XLSX_EXTENSION = ".xlsx";
 	
 
 }
