@@ -11,22 +11,19 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class SfUtils {
-
-	public static String getCellValueasString(XSSFSheet sheet, CellReference cellReference) {
-
+	
+	public static Cell getCell(XSSFSheet sheet, CellReference cellReference) {
 		Row row = sheet.getRow(cellReference.getRow());
-		Cell cell = row.getCell(cellReference.getCol());
-		String cellValue = cell.getStringCellValue();
-		
+		return row.getCell(cellReference.getCol());
+	}
+	
+	public static String getCellValueasString(XSSFSheet sheet, CellReference cellReference) {
+		String cellValue = getCell(sheet, cellReference).getStringCellValue();
 		return cellValue;
 	}
 	
 	public static Double getCellValueasNumber(XSSFSheet sheet, CellReference cellReference) {
-		
-		Row row = sheet.getRow(cellReference.getRow());
-		Cell cell = row.getCell(cellReference.getCol());
-		Double cellValue = cell.getNumericCellValue();
-		
+		Double cellValue = getCell(sheet, cellReference).getNumericCellValue();
 		return cellValue;
 	}
 	

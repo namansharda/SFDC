@@ -2,6 +2,9 @@ package com.sf.utils;
 
 public class Constants {
 	
+	public static String TEMPLATE_US = "Template-US";
+	public static String TEMPLATE_DUBAI = "Template-Dubai";
+	
 	public static String Currency_EURO = "EUR";
 	public static String Currency_USD = "USD";
 	public static String Currency_AED = "AED";

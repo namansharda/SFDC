@@ -66,5 +66,12 @@ public class InvoiceCSV {
 	public void setBillingType(String billingType) {
 		BillingType = billingType;
 	}
+	
+	@Override
+	public String toString() {
+		return "InvoiceCSV [Id=" + Id + ", Amount=" + Amount + ", Account_Name=" + Account_Name + ", Currency="
+				+ Currency + ", InvoiceStatus=" + InvoiceStatus + ", Project=" + Project + ", Contact=" + Contact
+				+ ", Invoice_External_Id__c=" + Invoice_External_Id__c + ", BillingType=" + BillingType + "]";
+	}
 
 }
