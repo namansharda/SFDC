@@ -8,6 +8,6 @@ import com.sf.model.InvoiceCSV;
 
 public interface ExcelTemplateReader {
 
-	public void parseExcel(File excel, List<InvoiceCSV> invoiceList) throws IOException;
+	public boolean parseExcel(File excel, List<InvoiceCSV> invoiceList) throws IOException;
 	
 }

@@ -1,5 +1,8 @@
 package com.sf.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -8,6 +11,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+
+import com.sf.service.FileTraverser;
 
 public class SfUtils {
 	
@@ -54,19 +59,57 @@ public class SfUtils {
 		return p;
 	}
 	
-	public static String valueStorePropertyLoader (String propertyName, Boolean write, String updatedValue) throws IOException {
+	public static Integer valueStorePropertyLoader (String propertyName, Boolean write, String updatedValue) {
 		String value ="";
-		FileReader valueStore =new FileReader("resource/valueStore.properties");
+		Integer intValue = null;
+		//FileReader valueStore = null;
+		FileInputStream valueStoreIn = null;
 		Properties p= new Properties();
-		p.load(valueStore);
+		try {
+			valueStoreIn = new FileInputStream("resource/valueStore.properties");
+			p.load(valueStoreIn);
+	
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("********** valueStore.properties not found **********");
+			e.printStackTrace();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("********** valueStore.properties I/O Exception **********");
+			e.printStackTrace();
+		}
 		
 		if(!write) {
 			value = p.getProperty(propertyName);
 		}else {
-			p.setProperty(propertyName, updatedValue);
+			try {
+				valueStoreIn.close();
+				
+				FileOutputStream valueStoreOut = new FileOutputStream("resource/valueStore.properties");
+				p.setProperty(propertyName, updatedValue);
+				p.store(valueStoreOut, null);
+				valueStoreOut.close();
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		return value;
+		
+		if(!value.isEmpty()) {
+			intValue = Integer.parseInt(value);
+		}
+		return intValue;
 	}
+	
+	
+	public static String getExternalIdValue() {
+	
+		FileTraverser.externalIdCounter = FileTraverser.externalIdCounter + 1;
+		return FileTraverser.externalIdCounter.toString();
+		
+	}
+	
 	
 	public static String getAccountId(String accountName) {
 		String accountId = "";

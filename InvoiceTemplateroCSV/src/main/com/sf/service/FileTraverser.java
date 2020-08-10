@@ -4,7 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,19 +19,16 @@ import com.sf.utils.SfUtils;
 //Traverse Each file in a folder 
 public class FileTraverser {
 
-//	public static Integer externalIdCounter = 1;
+	public static Integer externalIdCounter = 1;
 	List<InvoiceCSV> invoiceList = new ArrayList<InvoiceCSV>();
-	
+
 	TemplateReaderFactory templateFactory = new TemplateReaderFactory();
-	
+
 	public static void main(String[] args) {
-//		try {
-//			SfUtils.valueStorePropertyLoader("invoice_External_Id", false, null);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		String path = "E:\\SalseForce\\Community Portal\\Invoice Template\\sample template";
+
+		externalIdCounter = SfUtils.valueStorePropertyLoader("invoice_External_Id", false, null);
+
+		String path = "D:\\TemplateToCSV\\InvoiceTemplatesWithData";
 		File maindir = new File(path);
 		FileTraverser fileTraverser = new FileTraverser();
 		if (maindir.exists() && maindir.isDirectory()) {
@@ -35,10 +36,12 @@ public class FileTraverser {
 			fileTraverser.traverseFiles(arr);
 		}
 		fileTraverser.createCSVFromInvoiceList();
+
+		SfUtils.valueStorePropertyLoader("invoice_External_Id", true, externalIdCounter.toString());
 	}
 	
 	void traverseFiles(File[] arr) {
-		
+		boolean readSuccess = false;
 		for (int i = 0; i < arr.length; i++) {
 			System.out.println(arr[i].getName());
 			//call the template parser method for parsing logic
@@ -50,10 +53,12 @@ public class FileTraverser {
 				if(!template.isEmpty()) {
 					ExcelTemplateReader reader = templateFactory.getTemplateFactory(template);
 					if(reader != null)
-						reader.parseExcel(thisExcel, invoiceList);
+						readSuccess = reader.parseExcel(thisExcel, invoiceList);
 					else
 						System.out.println("Not an account specific file name "+ thisExcel.getName());
 				}
+				
+				moveFile(thisExcel, readSuccess);
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -62,39 +67,62 @@ public class FileTraverser {
 				
 			}
 			
+			
+		}
+	}
+	
+	private void moveFile(File thisExcel, boolean readSuccess) throws IOException {
+		
+		Date date = new Date();
+		
+		Path src = Paths.get(thisExcel.getPath());
+		Path dest = null;
+		if(readSuccess) {
+			 dest = Paths.get(Constants.SUCCESS_PATH + date.getTime() +"__"+ thisExcel.getName());	
+		}else {
+			dest = Paths.get(Constants.FAILURE_PATH + date.getTime() +"__"+ thisExcel.getName());
 		}
 		
+		Files.move(src, dest);
 		
 	}
 
-	//----- this method returns the specific template for invoice
-	private String getTemplateForReder(File thisExcel) {
-		String accName = "";
-		String template = "";
-		String fileName = thisExcel.getName();
-		System.out.println("fileNmae = " + fileName);
+	// ----- this method returns the specific template for invoice
+		private String getTemplateForReder(File thisExcel) {
+			String accName = "";
+			String template = "";
+			String fileName = thisExcel.getName();
+			System.out.println("fileNmae = " + fileName);
 
-		if (!fileName.contains("$")) {
-			String[] delimitedName = fileName.split("_");
-			for (String aName : delimitedName) {
-				if (aName.contains(Constants.XLSX_EXTENSION)) {
-					System.out.println("aName = " + aName);
-
+			if (validateFile(thisExcel)) {
+				String[] delimitedName = fileName.split("_");
+				for (String aName : delimitedName) {
 					accName = aName.replace(".", "_").split("_")[0];
 				}
 			}
-		}
-		if (!accName.isEmpty()) {
-			try {
-				Properties property = SfUtils.accountTemplateMappingPropertyLoader();
-				template = property.getProperty(accName);
-			} catch (IOException e) {
-				System.out.println("Template not found for file" + fileName);
-				e.printStackTrace();
+			if (!accName.isEmpty()) {
+				try {
+					Properties property = SfUtils.accountTemplateMappingPropertyLoader();
+					template = property.getProperty(accName);
+				} catch (IOException e) {
+					System.out.println("Template not found for file" + fileName);
+					e.printStackTrace();
+				}
 			}
+			return template;
 		}
-		return template;
-	}
+
+		private boolean validateFile(File file) {
+			String fileName = file.getName();
+
+			if (!fileName.contains("$")) {
+				if (fileName.endsWith(Constants.XLSX_EXTENSION));
+				return true;
+			}
+
+			return false;
+		}
+
 	
 	
 //	private void createCSVFromInvoiceList() {
@@ -138,7 +166,7 @@ public class FileTraverser {
 		
 		final char seprator = ','; // it could be a comma or a semi colon
 
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("E:/SalseForce/Community Portal/Invoice Template/generatedCSV/data.csv"))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("D:\\\\TemplateToCSV\\\\CSV\\\\TransformedInvoiceCSV.csv"))) {
 			writer.append("Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c").append(System.lineSeparator());
 			invoiceList.forEach(invoice -> {
 		    
@@ -154,7 +182,7 @@ public class FileTraverser {
 						      .append(invoice.getAccount_Name()).append(seprator)
 						      .append("").append(seprator)
 						      .append("").append(seprator)
-						      .append("").append(System.lineSeparator());
+						      .append(invoice.getInvoice_External_Id__c()).append(System.lineSeparator());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
