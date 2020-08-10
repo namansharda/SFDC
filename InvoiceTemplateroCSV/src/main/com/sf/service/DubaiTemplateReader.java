@@ -29,15 +29,20 @@ public class DubaiTemplateReader implements ExcelTemplateReader {
 
 		CellReference amountReferance = new CellReference("M38");
 		Double amount = SfUtils.getCellValueasNumber(sheet, amountReferance);
+		
+//		CellReference dateReferance = new CellReference("M14");
+//		String dateString = SfUtils.getCellValueasString(sheet, dateReferance);
 
 		invoice.setCurrency(Constants.Currency_AED);
 		invoice.setBillingType(Constants.BillingType_Monthly);
 		invoice.setInvoiceStatus(Constants.InvoiceStatus_Draft);
 		
+		
 		String accountId = SfUtils.getAccountId(accountName);
 		
 		invoice.setAccount_Name(accountId);
 		invoice.setAmount(amount);
+//		invoice.setInvoiceDate(dateString);
 
 		invoiceList.add(invoice);
 		System.out.println(invoiceList);
