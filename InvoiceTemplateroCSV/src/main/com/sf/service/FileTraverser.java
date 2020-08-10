@@ -1,20 +1,13 @@
 package com.sf.service;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.opencsv.CSVWriter;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.sf.model.InvoiceCSV;
 import com.sf.utils.Constants;
 import com.sf.utils.SfUtils;
@@ -34,7 +27,7 @@ public class FileTraverser {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		String path = "D:\\TemplateToCSV\\InvoiceTemplatesWithData";
+		String path = "E:\\SalseForce\\Community Portal\\Invoice Template\\sample template";
 		File maindir = new File(path);
 		FileTraverser fileTraverser = new FileTraverser();
 		if (maindir.exists() && maindir.isDirectory()) {
@@ -104,41 +97,73 @@ public class FileTraverser {
 	}
 	
 	
+//	private void createCSVFromInvoiceList() {
+//
+//		Writer writer = null;
+//		try {
+//			writer = Files.newBufferedWriter(Paths.get("E:/SalseForce/Community Portal/Invoice Template/generatedCSV/data.csv"));
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		
+//		if (writer != null) {
+//			System.out.println("writer != null" );
+//
+//			ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
+//			mappingStrategy.setType(InvoiceCSV.class);
+//
+//			StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(mappingStrategy)
+//					.withSeparator('#').withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
+//
+//			try {
+//				System.out.println("befor writing csv  ::::::  " + this.invoiceList);
+//
+//				beanToCsv.write(this.invoiceList);
+//
+//			} catch (CsvDataTypeMismatchException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (CsvRequiredFieldEmptyException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		System.out.println("****************CSV Written***************");
+//
+//	}
+	
 	private void createCSVFromInvoiceList() {
+		
+		final char seprator = ','; // it could be a comma or a semi colon
 
-		Writer writer = null;
-		try {
-			writer = Files.newBufferedWriter(Paths.get("D:\\TemplateToCSV\\CSV\\TransformedInvoiceCSV"));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("E:/SalseForce/Community Portal/Invoice Template/generatedCSV/data.csv"))) {
+			writer.append("Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c").append(System.lineSeparator());
+			invoiceList.forEach(invoice -> {
+		    
+					try {
+						writer.append("").append(seprator)
+						      .append(invoice.getAmount().toString()).append(seprator)
+						      .append(invoice.getBillingType()).append(seprator)
+						      .append(invoice.getCurrency()).append(seprator)
+						      .append("").append(seprator)
+						      .append("").append(seprator)
+						      .append(invoice.getInvoiceStatus()).append(seprator)
+						      .append("").append(seprator)
+						      .append(invoice.getAccount_Name()).append(seprator)
+						      .append("").append(seprator)
+						      .append("").append(seprator)
+						      .append("").append(System.lineSeparator());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+		    });
+			System.out.println("CSV Created");
+		} catch (IOException ex) {
+		    ex.printStackTrace();
 		}
 		
-		if (writer != null) {
-			System.out.println("writer != null" );
-
-			ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
-			mappingStrategy.setType(InvoiceCSV.class);
-
-			StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(mappingStrategy)
-					.withSeparator('#').withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
-
-			try {
-				System.out.println("befor writing csv  ::::::  " + this.invoiceList);
-
-				beanToCsv.write(this.invoiceList);
-
-			} catch (CsvDataTypeMismatchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CsvRequiredFieldEmptyException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		System.out.println("****************CSV Written***************");
-
 	}
 
 }

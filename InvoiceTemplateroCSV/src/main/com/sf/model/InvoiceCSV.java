@@ -11,6 +11,7 @@ public class InvoiceCSV {
 	String Contact;
 	String Invoice_External_Id__c;
 	String BillingType;
+	String invoiceDate;
 	
 	public String getId() {
 		return Id;
@@ -67,11 +68,19 @@ public class InvoiceCSV {
 		BillingType = billingType;
 	}
 	
+	public String getInvoiceDate() {
+		return invoiceDate;
+	}
+	public void setInvoiceDate(String invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
 	@Override
 	public String toString() {
 		return "InvoiceCSV [Id=" + Id + ", Amount=" + Amount + ", Account_Name=" + Account_Name + ", Currency="
 				+ Currency + ", InvoiceStatus=" + InvoiceStatus + ", Project=" + Project + ", Contact=" + Contact
-				+ ", Invoice_External_Id__c=" + Invoice_External_Id__c + ", BillingType=" + BillingType + "]";
+				+ ", Invoice_External_Id__c=" + Invoice_External_Id__c + ", BillingType=" + BillingType
+				+ ", invoiceDate=" + invoiceDate + "]";
 	}
+	
 
 }
