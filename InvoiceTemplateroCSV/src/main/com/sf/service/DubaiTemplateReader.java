@@ -48,11 +48,11 @@ public class DubaiTemplateReader implements ExcelTemplateReader {
 			invoice.setBillingType(Constants.BillingType_Monthly);
 			invoice.setInvoiceStatus(Constants.InvoiceStatus_Draft);
 			
+//			String accountId = SfUtils.getAccountId(accountName);
 			
-			String accountId = SfUtils.getAccountId(accountName);
-			
-			invoice.setAccount_Name(accountId);
+			invoice.setAccount_Name(SfUtils.getAccountId(accountName));
 			invoice.setAmount(amount);
+			invoice.setContact(SfUtils.getContactId(accountName));
 //			invoice.setInvoiceDate(dateString);
 
 			invoiceList.add(invoice);

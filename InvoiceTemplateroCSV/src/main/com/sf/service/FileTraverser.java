@@ -169,7 +169,7 @@ public class FileTraverser {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter("D:\\\\TemplateToCSV\\\\CSV\\\\TransformedInvoiceCSV.csv"))) {
 			writer.append("Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c").append(System.lineSeparator());
 			invoiceList.forEach(invoice -> {
-		    
+
 					try {
 						writer.append("").append(seprator)
 						      .append(invoice.getAmount().toString()).append(seprator)
@@ -181,7 +181,7 @@ public class FileTraverser {
 						      .append("").append(seprator)
 						      .append(invoice.getAccount_Name()).append(seprator)
 						      .append("").append(seprator)
-						      .append("").append(seprator)
+						      .append(invoice.getContact()).append(seprator)
 						      .append(invoice.getInvoice_External_Id__c()).append(System.lineSeparator());
 					} catch (IOException e) {
 						e.printStackTrace();
