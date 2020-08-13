@@ -58,7 +58,6 @@ public class USTemplateReader implements ExcelTemplateReader {
 //			invoice.setInvoiceDate(dateString);
 
 			invoiceList.add(invoice);
-			System.out.println(invoiceList);
 			
 			readSuccess = true;
 			

@@ -12,186 +12,162 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.sf.model.InvoiceCSV;
 import com.sf.utils.Constants;
+import com.sf.utils.IBException;
 import com.sf.utils.SfUtils;
 
 //Traverse Each file in a folder 
 public class FileTraverser {
 
+	static Logger logger = Logger.getLogger(FileTraverser.class.getName());
+
 	public static Integer externalIdCounter = 1;
 	List<InvoiceCSV> invoiceList = new ArrayList<InvoiceCSV>();
-
 	TemplateReaderFactory templateFactory = new TemplateReaderFactory();
 
 	public static void main(String[] args) {
 
-		externalIdCounter = SfUtils.valueStorePropertyLoader("invoice_External_Id", false, null);
+		System.out.println("******************Execution Start****************");
+		logger.info("******************Execution Start****************");
 
-		String path = "D:\\TemplateToCSV\\InvoiceTemplatesWithData";
-		File maindir = new File(path);
+		externalIdCounter = SfUtils.valueStorePropertyLoader(Constants.INVOICE_EXTERNAL_ID, false, null);
+		File maindir = new File(Constants.EXCELTEMPLATE_PATH);
 		FileTraverser fileTraverser = new FileTraverser();
-		if (maindir.exists() && maindir.isDirectory()) {
-			File arr[] = maindir.listFiles();
-			fileTraverser.traverseFiles(arr);
-		}
+			if (maindir.exists() && maindir.isDirectory()) {
+				File arr[] = maindir.listFiles();
+				fileTraverser.traverseFiles(arr);
+			}
 		fileTraverser.createCSVFromInvoiceList();
+		SfUtils.valueStorePropertyLoader(Constants.INVOICE_EXTERNAL_ID, true, externalIdCounter.toString());
 
-		SfUtils.valueStorePropertyLoader("invoice_External_Id", true, externalIdCounter.toString());
+		logger.info("******************Execution End****************");
+		System.out.println("******************Execution End****************");
 	}
-	
+
 	void traverseFiles(File[] arr) {
 		boolean readSuccess = false;
 		for (int i = 0; i < arr.length; i++) {
-			System.out.println(arr[i].getName());
-			//call the template parser method for parsing logic
+
+			// call the template parser method for parsing logic
 			File thisExcel = arr[i];
-			
+			logger.info("file  for traversing =:" + thisExcel.getName());
 			String template = getTemplateForReder(thisExcel);
-			
+
 			try {
-				if(!template.isEmpty()) {
+				if (!template.isEmpty()) {
 					ExcelTemplateReader reader = templateFactory.getTemplateFactory(template);
-					if(reader != null)
+					if (reader != null) {
+						logger.debug("Reader class template " + reader.getClass().getName());
 						readSuccess = reader.parseExcel(thisExcel, invoiceList);
-					else
-						System.out.println("Not an account specific file name "+ thisExcel.getName());
+					} else
+						logger.debug("Not an account specific file name " + thisExcel.getName());
 				}
-				
-				moveFile(thisExcel, readSuccess);
-				
+				try {
+					moveFile(thisExcel, readSuccess);
+				} catch (IBException e) {
+					logger.debug(e.getMessage());
+				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println("**********From FileTraverser.traverseFiles************");
-				e.printStackTrace();
-				
+				logger.debug("Exception caught while traversing file :" + thisExcel.getName());
+				logger.error(e.getStackTrace());
 			}
-			
-			
 		}
 	}
-	
-	private void moveFile(File thisExcel, boolean readSuccess) throws IOException {
-		
+
+	/*
+	 * This method will move the succeed files to success and failed files to the
+	 * failure folder
+	 */
+	private void moveFile(File thisExcel, boolean readSuccess) throws IBException {
 		Date date = new Date();
-		
 		Path src = Paths.get(thisExcel.getPath());
 		Path dest = null;
-		if(readSuccess) {
-			 dest = Paths.get(Constants.SUCCESS_PATH + date.getTime() +"__"+ thisExcel.getName());	
-		}else {
-			dest = Paths.get(Constants.FAILURE_PATH + date.getTime() +"__"+ thisExcel.getName());
+		if (readSuccess) {
+			dest = Paths.get(Constants.SUCCESS_PATH + date.getTime() + Constants.UNDERSCORE + thisExcel.getName());
+		} else {
+			dest = Paths.get(Constants.FAILURE_PATH + date.getTime() + Constants.UNDERSCORE + thisExcel.getName());
 		}
-		
-		Files.move(src, dest);
-		
+
+		try {
+			Files.move(src, dest);
+		} catch (IOException e) {
+			logger.error(e.getStackTrace());
+			throw new IBException("Exception Caught while moving the file " + thisExcel.getName());
+		}
+		logger.info(thisExcel.getName() + " file moved successfully to :" + dest.toString());
 	}
 
 	// ----- this method returns the specific template for invoice
-		private String getTemplateForReder(File thisExcel) {
-			String accName = "";
-			String template = "";
-			String fileName = thisExcel.getName();
-			System.out.println("fileNmae = " + fileName);
+	private String getTemplateForReder(File thisExcel) {
+		String accName = "";
+		String template = "";
+		String fileName = thisExcel.getName();
 
-			if (validateFile(thisExcel)) {
-				String[] delimitedName = fileName.split("_");
-				for (String aName : delimitedName) {
-					accName = aName.replace(".", "_").split("_")[0];
-				}
+		if (validateFile(thisExcel)) {
+			String[] delimitedName = fileName.split("_");
+			for (String aName : delimitedName) {
+				accName = aName.replace(".", "_").split("_")[0];
 			}
-			if (!accName.isEmpty()) {
-				try {
-					Properties property = SfUtils.accountTemplateMappingPropertyLoader();
-					template = property.getProperty(accName);
-				} catch (IOException e) {
-					System.out.println("Template not found for file" + fileName);
-					e.printStackTrace();
-				}
+		}
+		if (!accName.isEmpty()) {
+			try {
+				Properties property = SfUtils.accountTemplateMappingPropertyLoader();
+				template = property.getProperty(accName);
+			} catch (IOException e) {
+				logger.debug("Template not found for file" + fileName);
+				logger.error(e.getStackTrace());
+				;
 			}
-			return template;
+		}
+		logger.info(
+				"File name : " + fileName + "Extracted Template name : " + template + " for account name : " + accName);
+		return template;
+	}
+
+	private boolean validateFile(File file) {
+		String fileName = file.getName();
+
+		if (!fileName.contains("$")) {
+			if (fileName.endsWith(Constants.XLSX_EXTENSION))
+				;
+			return true;
 		}
 
-		private boolean validateFile(File file) {
-			String fileName = file.getName();
+		return false;
+	}
 
-			if (!fileName.contains("$")) {
-				if (fileName.endsWith(Constants.XLSX_EXTENSION));
-				return true;
-			}
-
-			return false;
-		}
-
-	
-	
-//	private void createCSVFromInvoiceList() {
-//
-//		Writer writer = null;
-//		try {
-//			writer = Files.newBufferedWriter(Paths.get("E:/SalseForce/Community Portal/Invoice Template/generatedCSV/data.csv"));
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		
-//		if (writer != null) {
-//			System.out.println("writer != null" );
-//
-//			ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
-//			mappingStrategy.setType(InvoiceCSV.class);
-//
-//			StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(mappingStrategy)
-//					.withSeparator('#').withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
-//
-//			try {
-//				System.out.println("befor writing csv  ::::::  " + this.invoiceList);
-//
-//				beanToCsv.write(this.invoiceList);
-//
-//			} catch (CsvDataTypeMismatchException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (CsvRequiredFieldEmptyException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//
-//		System.out.println("****************CSV Written***************");
-//
-//	}
-	
+	// Creating CSV from InvoiceList
 	private void createCSVFromInvoiceList() {
-		
-		final char seprator = ','; // it could be a comma or a semi colon
 
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("D:\\\\TemplateToCSV\\\\CSV\\\\TransformedInvoiceCSV.csv"))) {
-			writer.append("Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c").append(System.lineSeparator());
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.CSVFILE_PATH))) {
+			writer.append(
+					"Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c")
+					.append(System.lineSeparator());
 			invoiceList.forEach(invoice -> {
 
-					try {
-						writer.append("").append(seprator)
-						      .append(invoice.getAmount().toString()).append(seprator)
-						      .append(invoice.getBillingType()).append(seprator)
-						      .append(invoice.getCurrency()).append(seprator)
-						      .append("").append(seprator)
-						      .append("").append(seprator)
-						      .append(invoice.getInvoiceStatus()).append(seprator)
-						      .append("").append(seprator)
-						      .append(invoice.getAccount_Name()).append(seprator)
-						      .append("").append(seprator)
-						      .append(invoice.getContact()).append(seprator)
-						      .append(invoice.getInvoice_External_Id__c()).append(System.lineSeparator());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-		    });
-			System.out.println("CSV Created");
+				try {
+					writer.append("").append(Constants.SEPRATOR).append(invoice.getAmount().toString())
+							.append(Constants.SEPRATOR).append(invoice.getBillingType()).append(Constants.SEPRATOR)
+							.append(invoice.getCurrency()).append(Constants.SEPRATOR).append("")
+							.append(Constants.SEPRATOR).append("").append(Constants.SEPRATOR)
+							.append(invoice.getInvoiceStatus()).append(Constants.SEPRATOR).append("")
+							.append(Constants.SEPRATOR).append(invoice.getAccount_Name()).append(Constants.SEPRATOR)
+							.append("").append(Constants.SEPRATOR).append(invoice.getContact())
+							.append(Constants.SEPRATOR).append(invoice.getInvoice_External_Id__c())
+							.append(System.lineSeparator());
+				} catch (IOException e) {
+					logger.error(e.getStackTrace());
+				}
+			});
+
+			logger.info("CSV created Successfully");
 		} catch (IOException ex) {
-		    ex.printStackTrace();
+			logger.debug("An exception caught while creating CSV" + ex.getMessage());
+			logger.error(ex.getStackTrace());
 		}
-		
 	}
 
 }
