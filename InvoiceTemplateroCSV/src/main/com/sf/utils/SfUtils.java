@@ -19,23 +19,46 @@ public class SfUtils {
 	
 	static Logger logger = Logger.getLogger(SfUtils.class.getName());
 
+	/**
+	 * 
+	 * @param sheet
+	 * @param cellReference
+	 * @return
+	 */
 	public static Cell getCell(XSSFSheet sheet, CellReference cellReference) {
 		Row row = sheet.getRow(cellReference.getRow());
 		return row.getCell(cellReference.getCol());
 	}
 
+	/**
+	 * 
+	 * @param sheet
+	 * @param cellReference
+	 * @return
+	 */
 	public static String getCellValueasString(XSSFSheet sheet, CellReference cellReference) {
 		String cellValue = getCell(sheet, cellReference).getStringCellValue();
 		return cellValue;
 	}
 
+	/**
+	 * 
+	 * @param sheet
+	 * @param cellReference
+	 * @return
+	 */
 	public static Double getCellValueasNumber(XSSFSheet sheet, CellReference cellReference) {
 		Double cellValue = getCell(sheet, cellReference).getNumericCellValue();
 		return cellValue;
 	}
 
-	
-	public static Properties AccountTemplatePropertyLoader(String accName) throws IOException {
+	/**
+	 * 
+	 * @param accName
+	 * @return
+	 * @throws IOException
+	 */
+	public static Properties accountTemplatePropertyLoader(String accName) throws IOException {
 
 		FileReader accountPropertyMapping = new FileReader("resource/accountPropertyMapping.properties");
 		Properties p = new Properties();
@@ -49,6 +72,12 @@ public class SfUtils {
 		
 		return templateProperty;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	public static Properties accountTemplateMappingPropertyLoader() throws IOException {
 		
 		FileReader accountTemplate = new FileReader("resource/accountTemplateMapping.properties");
@@ -58,6 +87,11 @@ public class SfUtils {
 		return p;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	public static Properties accountMappingPropertyLoader() throws IOException {
 
 		FileReader accountMappings = new FileReader("resource/accountMappings.properties");
@@ -66,7 +100,12 @@ public class SfUtils {
 
 		return p;
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	public static Properties projectMappingPropertyLoader() throws IOException {
 
 		FileReader projectMappings = new FileReader("resource/projectMappings.properties");
@@ -76,6 +115,11 @@ public class SfUtils {
 		return p;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	public static Properties accountContactMappingPropertyLoader() throws IOException {
 
 		FileReader accountContactMapping = new FileReader("resource/accountContactMapping.properties");
@@ -85,7 +129,14 @@ public class SfUtils {
 		return p;
 	}
 
-	// GEtting the value for external Id
+
+	/**
+	 * 	// GEtting the value for external Id
+	 * @param propertyName
+	 * @param write
+	 * @param updatedValue
+	 * @return
+	 */
 	public static Integer valueStorePropertyLoader(String propertyName, Boolean write, String updatedValue) {
 		String value = "";
 		Integer intValue = null;
@@ -127,6 +178,10 @@ public class SfUtils {
 		return intValue;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static String getExternalIdValue() {
 
 		FileTraverser.externalIdCounter = FileTraverser.externalIdCounter + 1;
@@ -134,6 +189,11 @@ public class SfUtils {
 
 	}
 
+	/**
+	 * 
+	 * @param accountName
+	 * @return
+	 */
 	public static String getAccountId(String accountName) {
 		String accountId = "";
 		try {
@@ -145,6 +205,11 @@ public class SfUtils {
 		return accountId;
 	}
 
+	/**
+	 * 
+	 * @param accountName
+	 * @return
+	 */
 	public static String getContactId(String accountName) {
 		String accountId = "";
 		try {

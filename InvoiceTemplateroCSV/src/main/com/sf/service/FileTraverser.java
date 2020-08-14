@@ -54,8 +54,11 @@ public class FileTraverser {
 
 	void traverseFiles(File[] arr) {
 		boolean readSuccess = false;
+		logger.info("No of templates to be readed:" + arr.length);
+		
 		for (int i = 0; i < arr.length; i++) {
-
+			logger.info("File No : " + (i+1));
+			
 			// call the template parser method for parsing logic
 			File thisExcel = arr[i];
 			logger.info("file  for traversing =:" + thisExcel.getName());
@@ -69,7 +72,7 @@ public class FileTraverser {
 
 			} catch (IBException e) {
 				logger.debug("Exception caught while traversing file :" + thisExcel.getName());
-				logger.error(e.getStackTrace());
+				logger.error("Exception : ", e);
 				logger.error(e.getMessage());
 			}
 		}
@@ -92,7 +95,7 @@ public class FileTraverser {
 		try {
 			Files.move(src, dest);
 		} catch (IOException e) {
-			logger.error(e.getStackTrace());
+			logger.error("Exception : ", e);
 			throw new IBException("Exception Caught while moving the file " + thisExcel.getName());
 		}
 		logger.info(thisExcel.getName() + " file moved successfully to :" + dest.toString());
@@ -112,10 +115,10 @@ public class FileTraverser {
 		}
 		if (!accName.isEmpty()) {
 			try {
-				template = SfUtils.AccountTemplatePropertyLoader(accName);
+				template = SfUtils.accountTemplatePropertyLoader(accName);
 			} catch (IOException e) {
 				logger.debug("Template not found for file" + fileName);
-				logger.error(e.getStackTrace());
+				logger.error("Exception : ", e);
 			}
 		}
 		logger.info("File name : " + fileName + "Extracted Template name : " + template + " for account name : " + accName);
@@ -140,9 +143,7 @@ public class FileTraverser {
 		logger.info("Invoice List Before Creating CSV" + this.invoiceList);
 
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.CSVFILE_PATH))) {
-			writer.append(
-					"Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c")
-					.append(System.lineSeparator());
+			writer.append("Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c").append(System.lineSeparator());
 			invoiceList.forEach(invoice -> {
 				try {
 					writer.append("").append(Constants.SEPRATOR).append(invoice.getAmount().toString())
@@ -155,14 +156,14 @@ public class FileTraverser {
 							.append(Constants.SEPRATOR).append(invoice.getInvoice_External_Id__c())
 							.append(System.lineSeparator());
 				} catch (IOException e) {
-					logger.error(e.getStackTrace());
+					logger.error("Exception : ", e);
 				}
 			});
 
 			logger.info("CSV created Successfully");
 		} catch (IOException ex) {
 			logger.debug("An exception caught while creating CSV" + ex.getMessage());
-			logger.error(ex.getStackTrace());
+			logger.error("Exception : ", ex);
 		}
 	}
 
@@ -210,15 +211,15 @@ public class FileTraverser {
 
 		} catch (FileNotFoundException e) {
 			readSuccess = false;
-			logger.error(e.getStackTrace());
+			logger.error("Exception : ", e);
 			throw new IBException("FileNotFound Exception In Class " + this.getClass().getName() + " for the file : " + excel.getName());
 		} catch (IOException e) {
 			readSuccess = false;
-			logger.error(e.getStackTrace());
+			logger.error("Exception : ", e);
 			throw new IBException("IOException In Class " + this.getClass().getName() + " for the file : " + excel.getName());
 		} catch (Exception e) {
 			readSuccess = false;
-			logger.error(e.getStackTrace());
+			logger.error("Exception : ", e);
 			throw new IBException("Exception In Class " + this.getClass().getName() + " for the file : " + excel.getName());
 		}
 		finally {
@@ -230,7 +231,7 @@ public class FileTraverser {
 					wb.close();
 				}
 			} catch (IOException e) {
-				logger.error(e.getStackTrace());
+				logger.error("Exception : ", e);
 			}
 		}
 		
