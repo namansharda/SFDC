@@ -25,7 +25,6 @@ public class Constants {
 	public static String EXCELTEMPLATE_PATH = "D:\\TemplateToCSV\\InvoiceTemplatesWithData";
 	public static String CSVFILE_PATH = "D:\\TemplateToCSV\\CSV\\TransformedInvoiceCSV.csv";
 	
-	
-	
+		
 
 }

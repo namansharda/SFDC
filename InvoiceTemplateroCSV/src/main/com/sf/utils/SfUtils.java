@@ -34,12 +34,27 @@ public class SfUtils {
 		return cellValue;
 	}
 
-	public static Properties accountTemplateMappingPropertyLoader() throws IOException {
+	
+	public static Properties AccountTemplatePropertyLoader(String accName) throws IOException {
 
+		FileReader accountPropertyMapping = new FileReader("resource/accountPropertyMapping.properties");
+		Properties p = new Properties();
+		p.load(accountPropertyMapping);
+		
+		String templatePropertyName = "resource/"+p.getProperty(accName);
+		
+		FileReader templatePropertyMapping = new FileReader(templatePropertyName);
+		Properties templateProperty = new Properties();
+		templateProperty.load(templatePropertyMapping);
+		
+		return templateProperty;
+	}
+	public static Properties accountTemplateMappingPropertyLoader() throws IOException {
+		
 		FileReader accountTemplate = new FileReader("resource/accountTemplateMapping.properties");
 		Properties p = new Properties();
 		p.load(accountTemplate);
-
+		
 		return p;
 	}
 
