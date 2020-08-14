@@ -2,6 +2,7 @@ package com.sf.utils;
 
 public class Constants {
 
+	public static String DOLLAR = "$";
 	public static char SEPRATOR = ',';
 	public static char UNDERSCORE = '_';
 	public static String TEMPLATE_US = "Template-US";

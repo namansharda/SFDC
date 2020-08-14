@@ -9,17 +9,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.sf.model.InvoiceCSV;
 import com.sf.utils.Constants;
+import com.sf.utils.IBException;
 import com.sf.utils.SfUtils;
 
 public class DubaiTemplateReader implements ExcelTemplateReader {
 	
-	public boolean parseExcel(File excel, List<InvoiceCSV> invoiceList)  {
+	static Logger logger = Logger.getLogger(DubaiTemplateReader.class.getName());
+	
+	public boolean parseExcel(File excel, List<InvoiceCSV> invoiceList) throws IBException  {
 		
 		boolean readSuccess = false;
 		InvoiceCSV invoice = new InvoiceCSV();
@@ -60,23 +64,23 @@ public class DubaiTemplateReader implements ExcelTemplateReader {
 			readSuccess = true;
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			readSuccess = false;
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
+			throw new IBException("FileNotFound Exception In Class " + this.getClass().getName() + " for the file : " + excel.getName());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			readSuccess = false;
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
+			throw new IBException("IOException In Class " + this.getClass().getName() + " for the file : " + excel.getName());
 		}finally {
 			try {
 				if(fis != null)
 					fis.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		
+		logger.info("CSV ReadSuccess : " + readSuccess);
 		return readSuccess;
 	}
 

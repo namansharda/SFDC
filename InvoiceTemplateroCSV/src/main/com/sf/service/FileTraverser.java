@@ -40,6 +40,7 @@ public class FileTraverser {
 				File arr[] = maindir.listFiles();
 				fileTraverser.traverseFiles(arr);
 			}
+			
 		fileTraverser.createCSVFromInvoiceList();
 		SfUtils.valueStorePropertyLoader(Constants.INVOICE_EXTERNAL_ID, true, externalIdCounter.toString());
 
@@ -65,14 +66,13 @@ public class FileTraverser {
 					} else
 						logger.debug("Not an account specific file name " + thisExcel.getName());
 				}
-				try {
-					moveFile(thisExcel, readSuccess);
-				} catch (IBException e) {
-					logger.debug(e.getMessage());
-				}
-			} catch (IOException e) {
+
+				moveFile(thisExcel, readSuccess);
+
+			} catch (IBException e) {
 				logger.debug("Exception caught while traversing file :" + thisExcel.getName());
 				logger.error(e.getStackTrace());
+				logger.error(e.getMessage());
 			}
 		}
 	}
@@ -119,35 +119,31 @@ public class FileTraverser {
 			} catch (IOException e) {
 				logger.debug("Template not found for file" + fileName);
 				logger.error(e.getStackTrace());
-				;
 			}
 		}
-		logger.info(
-				"File name : " + fileName + "Extracted Template name : " + template + " for account name : " + accName);
+		logger.info("File name : " + fileName + "Extracted Template name : " + template + " for account name : " + accName);
 		return template;
 	}
 
 	private boolean validateFile(File file) {
 		String fileName = file.getName();
 
-		if (!fileName.contains("$")) {
-			if (fileName.endsWith(Constants.XLSX_EXTENSION))
-				;
+		if (!fileName.contains(Constants.DOLLAR)) {
+			if (fileName.endsWith(Constants.XLSX_EXTENSION));
 			return true;
 		}
-
 		return false;
 	}
 
 	// Creating CSV from InvoiceList
 	private void createCSVFromInvoiceList() {
+		
+		logger.info("Invoice List Size " + this.invoiceList.size());
+		logger.info("Invoice List Before Creating CSV" + this.invoiceList);
 
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.CSVFILE_PATH))) {
-			writer.append(
-					"Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c")
-					.append(System.lineSeparator());
+			writer.append("Id,Amount,BillingType,Currency,FinancialYear,Month,InvoiceStatus,PaymentTerms,Account,Project,Contact,Invoice_External_Id__c").append(System.lineSeparator());
 			invoiceList.forEach(invoice -> {
-
 				try {
 					writer.append("").append(Constants.SEPRATOR).append(invoice.getAmount().toString())
 							.append(Constants.SEPRATOR).append(invoice.getBillingType()).append(Constants.SEPRATOR)
@@ -169,5 +165,4 @@ public class FileTraverser {
 			logger.error(ex.getStackTrace());
 		}
 	}
-
 }
