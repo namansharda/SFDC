@@ -59,7 +59,7 @@ public class FileTraverser {
 			// call the template parser method for parsing logic
 			File thisExcel = arr[i];
 			logger.info("file  for traversing =:" + thisExcel.getName());
-			Properties template = getTemplateForReder(thisExcel);
+			Properties template = getTemplateProperties(thisExcel);
 
 			try {
 				if (template != null) {
@@ -99,7 +99,7 @@ public class FileTraverser {
 	}
 
 	// ----- this method returns the specific template for invoice
-	private Properties getTemplateForReder(File thisExcel) {
+	private Properties getTemplateProperties(File thisExcel) {
 		String accName = "";
 		Properties template = null;
 		String fileName = thisExcel.getName();
@@ -235,4 +235,5 @@ public class FileTraverser {
 		}
 		
 		return readSuccess;
-	}}
+	}
+}
