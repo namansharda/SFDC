@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,11 +47,9 @@ public class FileTraverser {
 		}
 
 		fileTraverser.createCSVFromInvoiceList();
-		try {
-			fileTraverser.moveFile();
-		} catch (IBException e) {
-			logger.error(e.getMessage());
-		}
+
+		fileTraverser.moveFile();
+		
 		SfUtils.valueStorePropertyLoader(Constants.INVOICE_EXTERNAL_ID, true, externalIdCounter.toString());
 
 		logger.info("******************Execution End****************");
@@ -87,7 +86,7 @@ public class FileTraverser {
 	 * This method will move the succeed files to success and failed files to the
 	 * failure folder
 	 */
-	private void moveFile() throws IBException {
+	private void moveFile() {
 
 		for (InvoiceCSV thisInvoice : this.invoiceList) {
 
@@ -103,13 +102,19 @@ public class FileTraverser {
 			}
 
 			try {
+
 				Files.move(src, dest);
+				logger.info(thisInvoice.getFileName() + " file moved successfully to :" + dest.toString());
+				
+			} catch (FileSystemException e) {
+				logger.error("Exception : ", e);
+				logger.error(new IBException("Exception Caught while moving the file " + thisInvoice.getFileName()).toString());
 			} catch (IOException e) {
 				logger.error("Exception : ", e);
-				throw new IBException("Exception Caught while moving the file " + thisInvoice.getFileName());
+				logger.error(new IBException("Exception Caught while moving the file " + thisInvoice.getFileName()).toString());
 			}
+
 			
-			logger.info(thisInvoice.getFileName() + " file moved successfully to :" + dest.toString());
 		}
 	}
 
@@ -196,11 +201,9 @@ public class FileTraverser {
 			// creating a Sheet object to retrieve the object
 
 			CellReference accountNameReferance = new CellReference(templateProps.getProperty("accountNameReference"));
-			System.out.println(templateProps.getProperty("accountNameReference"));
 			String accountName = SfUtils.getCellValueasString(sheet, accountNameReferance);
 
 			CellReference amountReferance = new CellReference(templateProps.getProperty("amountReference"));
-			System.out.println(templateProps.getProperty("amountReference"));
 			Double amount = SfUtils.getCellValueasNumber(sheet, amountReferance);
 
 //			CellReference dateReferance = new CellReference("M14");
