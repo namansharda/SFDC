@@ -66,6 +66,8 @@ public class SfUtils {
 		
 		String templatePropertyName = "resource/"+p.getProperty(accName);
 		
+		logger.info("Property File Name : " + templatePropertyName + " for Account Name : "+ accName);
+		
 		FileReader templatePropertyMapping = new FileReader(templatePropertyName);
 		Properties templateProperty = new Properties();
 		templateProperty.load(templatePropertyMapping);

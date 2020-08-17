@@ -46,6 +46,11 @@ public class FileTraverser {
 		}
 
 		fileTraverser.createCSVFromInvoiceList();
+		try {
+			fileTraverser.moveFile();
+		} catch (IBException e) {
+			logger.error(e.getMessage());
+		}
 		SfUtils.valueStorePropertyLoader(Constants.INVOICE_EXTERNAL_ID, true, externalIdCounter.toString());
 
 		logger.info("******************Execution End****************");
@@ -53,7 +58,7 @@ public class FileTraverser {
 	}
 
 	void traverseFiles(File[] arr) {
-		boolean readSuccess = false;
+		//boolean readSuccess = false;
 		logger.info("No of templates to be readed:" + arr.length);
 		
 		for (int i = 0; i < arr.length; i++) {
@@ -66,8 +71,8 @@ public class FileTraverser {
 
 			try {
 				if (template != null) {
-					readSuccess = extractValuesFromExcel(template, thisExcel);
-					moveFile(thisExcel, readSuccess);
+					extractValuesFromExcel(template, thisExcel);
+					//moveFile(thisExcel, readSuccess);
 				}
 
 			} catch (IBException e) {
@@ -82,23 +87,30 @@ public class FileTraverser {
 	 * This method will move the succeed files to success and failed files to the
 	 * failure folder
 	 */
-	private void moveFile(File thisExcel, boolean readSuccess) throws IBException {
-		Date date = new Date();
-		Path src = Paths.get(thisExcel.getPath());
-		Path dest = null;
-		if (readSuccess) {
-			dest = Paths.get(Constants.SUCCESS_PATH + date.getTime() + Constants.UNDERSCORE + thisExcel.getName());
-		} else {
-			dest = Paths.get(Constants.FAILURE_PATH + date.getTime() + Constants.UNDERSCORE + thisExcel.getName());
-		}
+	private void moveFile() throws IBException {
 
-		try {
-			Files.move(src, dest);
-		} catch (IOException e) {
-			logger.error("Exception : ", e);
-			throw new IBException("Exception Caught while moving the file " + thisExcel.getName());
+		for (InvoiceCSV thisInvoice : this.invoiceList) {
+
+			Date date = new Date();
+			Path src = Paths.get(thisInvoice.getFilePath());
+			Path dest = null;
+			if (thisInvoice.isReadFlag() && thisInvoice.isCsvFlag()) {
+				dest = Paths.get(
+						Constants.SUCCESS_PATH + date.getTime() + Constants.UNDERSCORE + thisInvoice.getFileName());
+			} else {
+				dest = Paths.get(
+						Constants.FAILURE_PATH + date.getTime() + Constants.UNDERSCORE + thisInvoice.getFileName());
+			}
+
+			try {
+				Files.move(src, dest);
+			} catch (IOException e) {
+				logger.error("Exception : ", e);
+				throw new IBException("Exception Caught while moving the file " + thisInvoice.getFileName());
+			}
+			
+			logger.info(thisInvoice.getFileName() + " file moved successfully to :" + dest.toString());
 		}
-		logger.info(thisExcel.getName() + " file moved successfully to :" + dest.toString());
 	}
 
 	// ----- this method returns the specific template for invoice
@@ -121,7 +133,7 @@ public class FileTraverser {
 				logger.error("Exception : ", e);
 			}
 		}
-		logger.info("File name : " + fileName + "Extracted Template name : " + template + " for account name : " + accName);
+		logger.info("File name : " + fileName + " Extracted Property file Values : " + template + " for account name : " + accName);
 		return template;
 	}
 
@@ -155,6 +167,8 @@ public class FileTraverser {
 							.append("").append(Constants.SEPRATOR).append(invoice.getContact())
 							.append(Constants.SEPRATOR).append(invoice.getInvoice_External_Id__c())
 							.append(System.lineSeparator());
+					
+					invoice.setCsvFlag(true);
 				} catch (IOException e) {
 					logger.error("Exception : ", e);
 				}
@@ -205,9 +219,13 @@ public class FileTraverser {
 			invoice.setContact(SfUtils.getContactId(accountName));
 //			invoice.setInvoiceDate(dateString);
 
-			invoiceList.add(invoice);
-
 			readSuccess = true;
+			
+			invoice.setFileName(excel.getName());
+			invoice.setFilePath(excel.getPath());
+			invoice.setReadFlag(readSuccess);
+			
+			invoiceList.add(invoice);
 
 		} catch (FileNotFoundException e) {
 			readSuccess = false;
