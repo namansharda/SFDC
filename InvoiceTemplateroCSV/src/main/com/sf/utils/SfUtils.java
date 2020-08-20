@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -29,6 +30,11 @@ public class SfUtils {
 		Row row = sheet.getRow(cellReference.getRow());
 		return row.getCell(cellReference.getCol());
 	}
+	
+	public static Cell getHSSFCell(HSSFSheet sheet, CellReference cellReference) {
+		Row row = sheet.getRow(cellReference.getRow());
+		return row.getCell(cellReference.getCol());
+	}
 
 	/**
 	 * 
@@ -40,6 +46,11 @@ public class SfUtils {
 		String cellValue = getCell(sheet, cellReference).getStringCellValue();
 		return cellValue;
 	}
+	
+	public static String getHSSFCellValueasString(HSSFSheet sheet, CellReference cellReference) {
+		String cellValue = getHSSFCell(sheet, cellReference).getStringCellValue();
+		return cellValue;
+	}
 
 	/**
 	 * 
@@ -49,6 +60,11 @@ public class SfUtils {
 	 */
 	public static Double getCellValueasNumber(XSSFSheet sheet, CellReference cellReference) {
 		Double cellValue = getCell(sheet, cellReference).getNumericCellValue();
+		return cellValue;
+	}
+	
+	public static Double getHSSFCellValueasNumber(HSSFSheet sheet, CellReference cellReference) {
+		Double cellValue = getHSSFCell(sheet, cellReference).getNumericCellValue();
 		return cellValue;
 	}
 
@@ -200,6 +216,7 @@ public class SfUtils {
 		String accountId = "";
 		try {
 			Properties property = SfUtils.accountMappingPropertyLoader();
+			accountName = accountName.trim().replace(" ", "_");
 			accountId = property.getProperty(accountName);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -216,6 +233,7 @@ public class SfUtils {
 		String accountId = "";
 		try {
 			Properties property = SfUtils.accountContactMappingPropertyLoader();
+			accountName = accountName.trim().replace(" ", "_");
 			accountId = property.getProperty(accountName);
 		} catch (IOException e) {
 			e.printStackTrace();

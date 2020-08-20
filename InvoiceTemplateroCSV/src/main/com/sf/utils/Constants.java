@@ -18,6 +18,7 @@ public class Constants {
 
 	public static String InvoiceStatus_Draft = "Draft";
 	public static String XLSX_EXTENSION = ".xlsx";
+	public static String XLS_EXTENSION = ".xls";
 
 	public static String SUCCESS_PATH = "D:\\TemplateToCSV\\Success\\";
 	public static String FAILURE_PATH = "D:\\TemplateToCSV\\Failure\\";

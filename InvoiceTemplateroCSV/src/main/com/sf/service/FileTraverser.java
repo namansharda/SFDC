@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -130,6 +132,9 @@ public class FileTraverser {
 				accName = aName.replace(".", "_").split("_")[0];
 			}
 		}
+		
+		accName = accName.trim().replace(" ", "_");
+		
 		if (!accName.isEmpty()) {
 			try {
 				template = SfUtils.accountTemplatePropertyLoader(accName);
@@ -192,20 +197,39 @@ public class FileTraverser {
 
 		FileInputStream fis = null;
 		XSSFWorkbook wb = null;
+		HSSFWorkbook hssfWb = null;
+		String accountName = null;
+		Double amount = null;
 		
 		try {
 			fis = new FileInputStream(excel);
-			wb = new XSSFWorkbook(fis);
-			XSSFSheet sheet = wb.getSheetAt(0);
+			
+			if (excel.getName().endsWith(Constants.XLSX_EXTENSION)) {
 
-			// creating a Sheet object to retrieve the object
+				wb = new XSSFWorkbook(fis);
+				XSSFSheet sheet = wb.getSheetAt(0);
 
-			CellReference accountNameReferance = new CellReference(templateProps.getProperty("accountNameReference"));
-			String accountName = SfUtils.getCellValueasString(sheet, accountNameReferance);
+				// creating a Sheet object to retrieve the object
 
-			CellReference amountReferance = new CellReference(templateProps.getProperty("amountReference"));
-			Double amount = SfUtils.getCellValueasNumber(sheet, amountReferance);
+				CellReference accountNameReferance = new CellReference(templateProps.getProperty("accountNameReference"));
+				accountName = SfUtils.getCellValueasString(sheet, accountNameReferance);
 
+				CellReference amountReferance = new CellReference(templateProps.getProperty("amountReference"));
+				amount = SfUtils.getCellValueasNumber(sheet, amountReferance);
+				
+			}else if(excel.getName().endsWith(Constants.XLS_EXTENSION)) {
+				
+				hssfWb = new HSSFWorkbook(fis);
+				HSSFSheet hssfSheet = hssfWb.getSheetAt(0);
+				
+				CellReference accountNameReferance = new CellReference(templateProps.getProperty("accountNameReference"));
+				accountName = SfUtils.getHSSFCellValueasString(hssfSheet, accountNameReferance);
+
+				CellReference amountReferance = new CellReference(templateProps.getProperty("amountReference"));
+				amount = SfUtils.getHSSFCellValueasNumber(hssfSheet, amountReferance);
+				
+				
+			}
 //			CellReference dateReferance = new CellReference("M14");
 //			String dateString = SfUtils.getCellValueasString(sheet, dateReferance);
 
