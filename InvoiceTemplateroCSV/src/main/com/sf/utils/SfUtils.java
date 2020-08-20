@@ -79,16 +79,22 @@ public class SfUtils {
 		FileReader accountPropertyMapping = new FileReader("resource/accountPropertyMapping.properties");
 		Properties p = new Properties();
 		p.load(accountPropertyMapping);
-		
-		String templatePropertyName = "resource/"+p.getProperty(accName);
-		
-		logger.info("Property File Name : " + templatePropertyName + " for Account Name : "+ accName);
-		
-		FileReader templatePropertyMapping = new FileReader(templatePropertyName);
-		Properties templateProperty = new Properties();
-		templateProperty.load(templatePropertyMapping);
-		
-		return templateProperty;
+
+		if (accName != null) {
+
+			String templatePropertyName = "resource/" + p.getProperty(accName);
+
+			logger.info("Property File Name : " + templatePropertyName + " for Account Name : " + accName);
+
+			FileReader templatePropertyMapping = new FileReader(templatePropertyName);
+			Properties templateProperty = new Properties();
+			templateProperty.load(templatePropertyMapping);
+
+			return templateProperty;
+		}
+
+		return null;
+
 	}
 	
 	/**
