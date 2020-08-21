@@ -240,10 +240,11 @@ public class FileTraverser {
 			invoice.setInvoiceStatus(Constants.InvoiceStatus_Draft);
 
 //			String accountId = SfUtils.getAccountId(accountName);
-
-			invoice.setAccount_Name(SfUtils.getAccountId(accountName));
+			String aName = accountName.replaceAll("\n", "__").split("__")[0];
+			aName = aName.replaceAll(" ", "_");
+			invoice.setAccount_Name(SfUtils.getAccountId(aName));
 			invoice.setAmount(amount);
-			invoice.setContact(SfUtils.getContactId(accountName));
+			invoice.setContact(SfUtils.getContactId(aName));
 //			invoice.setInvoiceDate(dateString);
 
 			readSuccess = true;
